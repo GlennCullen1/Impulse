@@ -1,26 +1,57 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+enum EGameState
+{
+	isPlaying,
+	isFinished
+}
+
 public class GameManager : MonoBehaviour
 {
-	[SerializeField] private float invincibilityTime = 5;
-
 	private PlayerController playerController;
 	private Heartbeat heartbeat;
 
+	private EGameState gameState = EGameState.isPlaying;
+
+	// Singleton
+	private static GameManager instance;
+	public static GameManager Instance
+	{
+		get
+		{
+			if(instance == null)
+			{
+				instance = new GameObject("[GameManager]", typeof(GameManager)).GetComponent<GameManager>();
+			}
+			return instance;
+		}
+	}
+
 	private void Start()
 	{
+		if(instance != null && instance != this)
+		{
+			Destroy(this.gameObject);
+		}else instance = this;
+
 		playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
 		heartbeat = playerController.GetComponent<Heartbeat>();
 	}
 
 	private void Update()
 	{
-		if( Time.time > invincibilityTime && (heartbeat.BPM > 200 || heartbeat.BPM <= 0) )
+		if(gameState == EGameState.isFinished)
 		{
-			Debug.Log("GameOver");
 			Destroy(playerController);
 			Destroy(heartbeat);
+			//TODO: ShowGameOverCanvas
 		}
+	}
+
+	public void TriggerGameOver()
+	{
+		gameState = EGameState.isFinished;
+		Debug.Log("GameOver");
 	}
 }
