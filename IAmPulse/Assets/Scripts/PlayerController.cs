@@ -12,11 +12,12 @@ enum EPlayerState
 [RequireComponent(typeof(Rigidbody))]
 public class PlayerController : MonoBehaviour 
 {
+	[SerializeField] private float invincibilityTime = 5;
+
 	[SerializeField] private float jumpLimit = 0;
 	[SerializeField] private float duckLimit = 0;
 
 	[SerializeField] private float jumpForce = 0;
-	[SerializeField] private float runSpeed = 0;
 
 	[SerializeField] private Transform[] lanes;
 
@@ -39,6 +40,11 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
+		if( Time.time > invincibilityTime && (heartbeat.BPM > 200 || heartbeat.BPM <= 60) )
+		{
+			GameManager.Instance.TriggerGameOver();
+		}
+
 		myRigidbody.velocity = new Vector3( 0, myRigidbody.velocity.y, heartbeat.BPM / 10);
 
 		if( playerState == EPlayerState.isRunning )
@@ -70,7 +76,6 @@ public class PlayerController : MonoBehaviour
 
 				playerState = EPlayerState.isSwitchingLane;
 				currentLaneIndex--;
-				// Play Duck Animation
 				StartCoroutine(WaitForTime(1f));
 				return;
 			}
@@ -84,7 +89,6 @@ public class PlayerController : MonoBehaviour
 				
 				playerState = EPlayerState.isSwitchingLane;
 				currentLaneIndex++;
-				// Play Duck Animation
 				StartCoroutine(WaitForTime(1f));
 				return;
 			}
@@ -107,6 +111,15 @@ public class PlayerController : MonoBehaviour
 		if( playerState == EPlayerState.isSwitchingLane )
 		{
 			myTransform.position = Vector3.Lerp( myTransform.position, new Vector3(lanes[currentLaneIndex].position.x, myTransform.position.y, myTransform.position.z), Time.deltaTime * 4 );
+		}
+	}
+
+	private void OnCollisionEnter(Collision obj)
+	{
+		// Hits Anything But The Platform
+		if(!obj.gameObject.CompareTag("Platform"))
+		{
+			GameManager.Instance.TriggerGameOver();
 		}
 	}
 
