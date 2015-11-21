@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 enum EPlayerState
@@ -21,6 +22,12 @@ public class PlayerController : MonoBehaviour
 
 	[SerializeField] private Transform[] lanes;
 
+	[SerializeField] private Text text;
+
+	private float startTime;
+
+	private GameObject gameOverUI;
+
 	private int currentLaneIndex = 1; // Middle Lane
 	
 	private EPlayerState playerState = EPlayerState.isRunning;
@@ -31,18 +38,27 @@ public class PlayerController : MonoBehaviour
 
 	private bool isShrinking = true;
 
+	float startPoint = 0;
+
 	private void Start()
 	{
 		heartbeat = GetComponent<Heartbeat>();
 		myRigidbody = GetComponent<Rigidbody>();
 		myTransform = GetComponent<Transform>();
+
+		gameOverUI = GameObject.FindGameObjectWithTag("GameOverMenu");
+		gameOverUI.SetActive(false);
+
+		startTime = Time.time;
+
+		startPoint = transform.position.z;
 	}
 
 	private void Update()
 	{
-		if( Time.time > invincibilityTime && (heartbeat.BPM > 200 || heartbeat.BPM <= 60) )
+		if( Time.time > startTime + invincibilityTime && (heartbeat.BPM > 200 || heartbeat.BPM <= 60) )
 		{
-			GameManager.Instance.TriggerGameOver();
+			TriggerGameOver();
 		}
 
 		myRigidbody.velocity = new Vector3( 0, myRigidbody.velocity.y, heartbeat.BPM / 10);
@@ -76,7 +92,7 @@ public class PlayerController : MonoBehaviour
 
 				playerState = EPlayerState.isSwitchingLane;
 				currentLaneIndex--;
-				StartCoroutine(WaitForTime(1f));
+				StartCoroutine(WaitForTime(0.8f));
 				return;
 			}
 
@@ -89,7 +105,7 @@ public class PlayerController : MonoBehaviour
 				
 				playerState = EPlayerState.isSwitchingLane;
 				currentLaneIndex++;
-				StartCoroutine(WaitForTime(1f));
+				StartCoroutine(WaitForTime(0.8f));
 				return;
 			}
 		}
@@ -117,9 +133,10 @@ public class PlayerController : MonoBehaviour
 	private void OnCollisionEnter(Collision obj)
 	{
 		// Hits Anything But The Platform
-		if(!obj.gameObject.CompareTag("Platform"))
+		if(!obj.gameObject.CompareTag("Platform") && Time.time > startTime + invincibilityTime)
 		{
-			GameManager.Instance.TriggerGameOver();
+			text.text = "Ran: " +  (transform.position.z - startPoint)  + " Meters!"; 
+			TriggerGameOver();
 		}
 	}
 
@@ -131,5 +148,12 @@ public class PlayerController : MonoBehaviour
 		yield return new WaitForSeconds(timeToWait);
 
 		playerState = EPlayerState.isRunning;
+	}
+
+	private void TriggerGameOver()
+	{
+		Destroy(this.gameObject);
+		Destroy(heartbeat);
+		gameOverUI.SetActive(true);
 	}
 }

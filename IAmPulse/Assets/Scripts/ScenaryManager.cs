@@ -17,7 +17,11 @@ public class ScenaryManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (GameObject.FindGameObjectWithTag ("Player").transform.position.z > this.transform.position.z + (roadLength * (roadCount-1))) {
+		GameObject obj = GameObject.FindGameObjectWithTag ("Player");
+
+		if(obj == null)
+			return;
+		if (obj.transform.position.z > this.transform.position.z + (roadLength * (roadCount-1))) {
 
 			SpawnRoad();
 		}

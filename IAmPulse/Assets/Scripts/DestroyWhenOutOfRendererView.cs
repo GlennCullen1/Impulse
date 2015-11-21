@@ -3,19 +3,19 @@ using System.Collections;
 
 public class DestroyWhenOutOfRendererView : MonoBehaviour 
 {
-	private MeshRenderer renderer;
+	private MeshRenderer meshRenderer;
 
 	private bool pastCountdown = false;
 
 	private void Start () 
 	{
-		renderer = GetComponent<MeshRenderer>();
+		meshRenderer = GetComponent<MeshRenderer>();
 		StartCoroutine ( Wait(2) );
 	}
 	
 	private void Update () 
 	{
-		if( !renderer.isVisible && pastCountdown )
+		if( !meshRenderer.isVisible && pastCountdown )
 		{
 			Destroy (this.gameObject);
 		}

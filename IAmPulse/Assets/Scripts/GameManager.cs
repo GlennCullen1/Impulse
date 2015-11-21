@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 enum EGameState
@@ -12,6 +13,8 @@ public class GameManager : MonoBehaviour
 	private PlayerController playerController;
 	private Heartbeat heartbeat;
 
+	private GameObject gameOverUI;
+
 	private EGameState gameState = EGameState.isPlaying;
 
 	// Singleton
@@ -20,23 +23,30 @@ public class GameManager : MonoBehaviour
 	{
 		get
 		{
-			if(instance == null)
-			{
-				instance = new GameObject("[GameManager]", typeof(GameManager)).GetComponent<GameManager>();
-			}
+//			if(instance == null)
+//			{
+//				instance = new GameObject("[GameManager]", typeof(GameManager)).GetComponent<GameManager>();
+//			}
 			return instance;
 		}
 	}
 
 	private void Start()
 	{
-		if(instance != null && instance != this)
-		{
-			Destroy(this.gameObject);
-		}else instance = this;
+//		if(instance != null && instance != this)
+//		{
+//			Destroy(this.gameObject);
+//		}else instance = this;
+
+		instance = this;
 
 		playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
 		heartbeat = playerController.GetComponent<Heartbeat>();
+
+		gameOverUI = GameObject.FindGameObjectWithTag("GameOverMenu");
+		gameOverUI.SetActive(false);
+
+		gameState = EGameState.isPlaying;
 	}
 
 	private void Update()
@@ -45,7 +55,7 @@ public class GameManager : MonoBehaviour
 		{
 			Destroy(playerController);
 			Destroy(heartbeat);
-			//TODO: ShowGameOverCanvas
+			gameOverUI.SetActive(true);
 		}
 	}
 
