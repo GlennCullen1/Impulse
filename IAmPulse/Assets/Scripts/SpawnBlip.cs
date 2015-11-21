@@ -35,6 +35,7 @@ public class SpawnBlip : MonoBehaviour {
 		}
 		foreach (GameObject beat in tempBeats) {
 			activeBlips.Remove(beat);
+			Destroy(beat);
 		}
 		tempBeats.Clear();
 	}
