@@ -19,7 +19,7 @@ public class SpawnBlip : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.Return))
 			{
 				GameObject blip = (GameObject)Instantiate(blipPrefab,spawnPoint.GetComponent<RectTransform>().position, Quaternion.identity);
-				blip.GetComponent<RectTransform>().parent = this.GetComponent<RectTransform>().parent;
+				blip.GetComponent<RectTransform>().SetParent (this.GetComponent<RectTransform>().parent );
 				activeBlips.Add(blip);
 			}
 		List<GameObject> tempBeats = new List<GameObject>();
