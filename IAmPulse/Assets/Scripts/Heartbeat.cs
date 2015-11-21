@@ -20,7 +20,7 @@ public class Heartbeat : MonoBehaviour {
 	[SerializeField] private List<Beat> pastBeats;
 	[SerializeField] private KeyCode beatKey = KeyCode.Return;
 	[SerializeField] private float SampleTime = 5.0f;
-	[SerializeField] private float BPM = 0;
+	[SerializeField] private float bpm = 0; public float BPM {get{ return bpm;}}
 	// Use this for initialization
 	void Start () {
 		pastBeats = new List<Beat>();
@@ -28,23 +28,26 @@ public class Heartbeat : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if(Input.GetKeyDown(beatKey))
+		if(bpm < 200)
 		{
-			pastBeats.Add(new Beat());
-		}
-		List<Beat> tempBeats = new List<Beat>();
-		if (pastBeats.Count > 0) {
-			foreach (Beat beat in pastBeats) {
-				beat.addTime (Time.deltaTime);
-				if (beat.timeSinceBeat > SampleTime) {
-					tempBeats.Add(beat);
+			if(Input.GetKeyDown(beatKey))
+			{
+				pastBeats.Add(new Beat());
+			}
+			List<Beat> tempBeats = new List<Beat>();
+			if (pastBeats.Count > 0) {
+				foreach (Beat beat in pastBeats) {
+					beat.addTime (Time.deltaTime);
+					if (beat.timeSinceBeat > SampleTime) {
+						tempBeats.Add(beat);
+					}
 				}
+				foreach (Beat beat in tempBeats) {
+					pastBeats.Remove(beat);
+				}
+				tempBeats.Clear();
 			}
-			foreach (Beat beat in tempBeats) {
-				pastBeats.Remove(beat);
-			}
-			tempBeats.Clear();
+			bpm = pastBeats.Count * 12;
 		}
-		BPM = pastBeats.Count * 12;
 	}
 }
