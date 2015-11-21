@@ -26,13 +26,11 @@ public class Heartbeat : MonoBehaviour
 	private void Start () 
 	{
 		pastBeats = new List<Beat>();
-		pastBeats.Add(new Beat());
+		//pastBeats.Add(new Beat());
 	}
 	
 	private void Update () 
 	{
-		if(bpm < 200)
-		{
 			if(Input.GetKeyDown(beatKey))
 			{
 				pastBeats.Add(new Beat());
@@ -55,6 +53,6 @@ public class Heartbeat : MonoBehaviour
 				tempBeats.Clear();
 			}
 			bpm = pastBeats.Count * 12;
-		}
+
 	}
 }
